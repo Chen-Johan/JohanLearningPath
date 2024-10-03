@@ -23,7 +23,7 @@ def bilinear_interpolation(img,out_dim):
                 # find the origin x and y coordinates of dst image x and y
                 # use geometric center symmetry
                 # if use direct way, src_x = dst_x * scale_x
-                src_x = (dst_x + 0.5) * scale_x-0.5
+                src_x = (dst_x + 0.5) * scale_x-0.5   # +0.5/-0.5 几何中心对齐，减少误差
                 src_y = (dst_y + 0.5) * scale_y-0.5
  
                 # find the coordinates of the points which will be used to compute the interpolation
@@ -45,3 +45,8 @@ if __name__ == '__main__':
     dst = bilinear_interpolation(img,(700,700))
     cv2.imshow('bilinear interp',dst)
     cv2.waitKey()
+
+
+# openCV resize 接口    
+# cv2.resize(img, (800,800,c),near/bin)
+
