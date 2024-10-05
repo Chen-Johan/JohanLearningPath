@@ -37,3 +37,20 @@ cv2.imshow("image",img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
+
+'''
+# 读取原始图像
+img=cv2.imread("lenna.png")
+# 使用OpenCV的resize接口实现相同的效果
+resized_img = cv2.resize(img, (800, 800), interpolation=cv2.INTER_NEAREST) # cv2.INTER_NEAREST: nearest interpolation
+
+# 打印结果
+print(resized_img)
+print(resized_img.shape)
+
+# 显示图像
+cv2.imshow("nearest interp with OpenCV", resized_img)
+cv2.imshow("image", img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+'''

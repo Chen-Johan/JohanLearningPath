@@ -58,7 +58,17 @@ if __name__ == '__main__':
     cv2.destroyAllWindows()
 
 
+'''
+# Using OpenCV's resize function to achieve the same effect
+resized_img = cv2.resize(img, (700, 700), interpolation=cv2.INTER_LINEAR) # cv2.INTER_LINEAR: bilinear interpolation
 
+# Display the resized image using OpenCV's resize function
+cv2.imshow('OpenCV Resized Image (700x700)', resized_img)
+
+# Wait for a key press and close the windows
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+'''
 
 
 
