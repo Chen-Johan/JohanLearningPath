@@ -4,12 +4,12 @@ from matplotlib import pyplot as plt
 
 '''
 calcHist—计算图像直方图
-函数原型：calcHist(images, channels, mask, histSize, ranges, hist=None, accumulate=None)
-images：图像矩阵，例如：[image]
-channels：通道数，例如：0
-mask：掩膜，一般为：None
-histSize：直方图大小，一般等于灰度级数
-ranges：横轴范围
+函数原型: calcHist(images, channels, mask, histSize, ranges, hist=None, accumulate=None)
+images: 图像矩阵，例如: [image]
+channels: 通道数，例如: 0
+mask: 掩膜，一般为: None
+histSize: 直方图大小，一般等于灰度级数
+ranges: 横轴范围
 '''
 
 
