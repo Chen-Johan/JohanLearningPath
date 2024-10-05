@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
@@ -43,7 +46,7 @@ image = cv2.imread("lenna.png")
 cv2.imshow("Original",image)
 #cv2.waitKey(0)
 
-chans = cv2.split(image)
+chans = cv2.split(image)    #分离通道
 colors = ("b","g","r")
 plt.figure()
 plt.title("Flattened Color Histogram")
@@ -51,7 +54,7 @@ plt.xlabel("Bins")
 plt.ylabel("# of Pixels")
 
 for (chan,color) in zip(chans,colors):
-    hist = cv2.calcHist([chan],[0],None,[256],[0,256])
+    hist = cv2.calcHist([chan],[0],None,[256],[0,256])  #计算直方图 # 0:通道索引 # None:掩膜 # 256:直方图尺寸 # 0,256:像素值范围
     plt.plot(hist,color = color)
     plt.xlim([0,256])
 plt.show()

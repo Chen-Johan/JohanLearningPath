@@ -1,27 +1,27 @@
 #!/usr/bin/env python
-# encoding=gbk
+# -*- coding: utf-8 -*-
 
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
 '''
-equalizeHist¡ªÖ±·½Í¼¾ùºâ»¯
-º¯ÊıÔ­ĞÍ£º equalizeHist(src, dst=None)
-src£ºÍ¼Ïñ¾ØÕó(µ¥Í¨µÀÍ¼Ïñ)
-dst£ºÄ¬ÈÏ¼´¿É
+equalizeHist Histogram Equalization
+Function prototype: equalizeHist(src, dst=None)
+src: Source image (single-channel image)
+dst: Default is None
 '''
 
-# »ñÈ¡»Ò¶ÈÍ¼Ïñ
+# Read the grayscale image ç°åº¦å›¾åƒç›´æ–¹å›¾å‡è¡¡åŒ–
 img = cv2.imread("lenna.png", 1)
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-#cv2.imshow("image_gray", gray)
+# cv2.imshow("image_gray", gray)
 
-# »Ò¶ÈÍ¼ÏñÖ±·½Í¼¾ùºâ»¯
+# Histogram equalization of the grayscale image ç°åº¦å›¾åƒç›´æ–¹å›¾å‡è¡¡åŒ–
 dst = cv2.equalizeHist(gray)
 
-# Ö±·½Í¼
-hist = cv2.calcHist([dst],[0],None,[256],[0,256])
+# Histogram of the equalized image ç›´æ–¹å›¾å‡è¡¡åŒ–åçš„ç›´æ–¹å›¾
+hist = cv2.calcHist([dst], [0], None, [256], [0, 256])
 
 plt.figure()
 plt.hist(dst.ravel(), 256)
@@ -32,16 +32,17 @@ cv2.waitKey(0)
 
 
 '''
-# ²ÊÉ«Í¼ÏñÖ±·½Í¼¾ùºâ»¯
+# Histogram equalization of a color image å½©è‰²å›¾åƒç›´æ–¹å›¾å‡è¡¡åŒ–
 img = cv2.imread("lenna.png", 1)
 cv2.imshow("src", img)
 
-# ²ÊÉ«Í¼Ïñ¾ùºâ»¯,ĞèÒª·Ö½âÍ¨µÀ ¶ÔÃ¿Ò»¸öÍ¨µÀ¾ùºâ»¯
+# For color image equalization, each channel needs to be processed separately å½©è‰²å›¾åƒå‡è¡¡åŒ–ï¼Œéœ€è¦åˆ†åˆ«å¤„ç†æ¯ä¸ªé€šé“
 (b, g, r) = cv2.split(img)
 bH = cv2.equalizeHist(b)
 gH = cv2.equalizeHist(g)
 rH = cv2.equalizeHist(r)
-# ºÏ²¢Ã¿Ò»¸öÍ¨µÀ
+
+# Merge each channel åˆå¹¶æ¯ä¸ªé€šé“
 result = cv2.merge((bH, gH, rH))
 cv2.imshow("dst_rgb", result)
 
