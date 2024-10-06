@@ -21,7 +21,7 @@ gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 dst = cv2.equalizeHist(gray)
 
 # Histogram of the equalized image 直方图均衡化后的直方图
-hist = cv2.calcHist([dst], [0], None, [256], [0, 256])
+hist = cv2.calcHist([dst], [0], None, [256], [0, 256])  #计算直方图 # 0:通道索引 # None:掩膜 # 256:直方图尺寸 # 0,256:像素值范围
 
 plt.figure()
 plt.hist(dst.ravel(), 256)
