@@ -1,20 +1,18 @@
 #!/usr/bin/env python
-# encoding=gbk
+# encoding=utf-8
 
 import matplotlib.pyplot as plt
 import sklearn.decomposition as dp
 from sklearn.datasets.base import load_iris
 
-x,y=load_iris(return_X_y=True) #¼ÓÔØÊı¾İ£¬x±íÊ¾Êı¾İ¼¯ÖĞµÄÊôĞÔÊı¾İ£¬y±íÊ¾Êı¾İ±êÇ©
-pca=dp.PCA(n_components=2) #¼ÓÔØpcaËã·¨£¬ÉèÖÃ½µÎ¬ºóÖ÷³É·ÖÊıÄ¿Îª2
-reduced_x=pca.fit_transform(x) #¶ÔÔ­Ê¼Êı¾İ½øĞĞ½µÎ¬£¬±£´æÔÚreduced_xÖĞ
-
-
+x,y=load_iris(return_X_y=True) # åŠ è½½æ•°æ®ï¼Œxè¡¨ç¤ºæ•°æ®é›†ä¸­çš„ç‰¹å¾æ•°æ®ï¼Œyè¡¨ç¤ºæ•°æ®æ ‡ç­¾
+pca=dp.PCA(n_components=2) # ä½¿ç”¨pcaç®—æ³•ï¼Œå¹¶ä¸”å°†ç»´åº¦é™ä½åˆ°2
+reduced_x=pca.fit_transform(x) # å°†åŸå§‹æ•°æ®è¿›è¡Œé™ç»´ï¼Œä¿å­˜åœ¨reduced_xä¸­
 
 red_x,red_y=[],[]
 blue_x,blue_y=[],[]
 green_x,green_y=[],[]
-for i in range(len(reduced_x)): #°´ğ°Î²»¨µÄÀà±ğ½«½µÎ¬ºóµÄÊı¾İµã±£´æÔÚ²»Í¬µÄ±íÖĞ
+for i in range(len(reduced_x)): # éå†æ‰€æœ‰æ•°æ®ç‚¹ï¼Œå°†é™ç»´åçš„æ•°æ®ç‚¹ä¿å­˜åœ¨ä¸åŒçš„ç±»åˆ«ä¸­
     if y[i]==0:
         red_x.append(reduced_x[i][0])
         red_y.append(reduced_x[i][1])

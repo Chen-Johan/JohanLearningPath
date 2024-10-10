@@ -11,8 +11,8 @@ def GaussianNoise(src,means,sigma,percetage):
 		#把一张图片的像素用行和列表示的话，randX 代表随机生成的行，randY代表随机生成的列
         #random.randint生成随机整数
 		#高斯噪声图片边缘不处理，故-1
-        randX=random.randint(0,src.shape[0]-1) 
-        randY=random.randint(0,src.shape[1]-1)
+        randX=random.randint(1,src.shape[0]-1)  #randint（a,b）随机生成a<=N<=b的整数, 内置种子不重复
+        randY=random.randint(1,src.shape[1]-1)
         #此处在原有像素灰度值上加上随机数
         NoiseImg[randX,randY]=NoiseImg[randX,randY]+random.gauss(means,sigma)
         #若灰度值小于0则强制为0，若灰度值大于255则强制为255

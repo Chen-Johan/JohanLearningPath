@@ -52,7 +52,7 @@ class CPCA(object):
         print('样本集的协方差矩阵C的特征值:\n', a)
         print('样本集的协方差矩阵C的特征向量:\n', b)
         #给出特征值降序的topK的索引序列
-        ind = np.argsort(-1*a)
+        ind = np.argsort(-1*a)  #argsort函数返回的是数组值从小到大的索引值，乘-1就是从大到小
         #构建K阶降维的降维转换矩阵U
         UT = [b[:,ind[i]] for i in range(self.K)]
         U = np.transpose(UT)
