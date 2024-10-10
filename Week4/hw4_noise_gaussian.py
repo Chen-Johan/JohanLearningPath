@@ -66,9 +66,6 @@ end_time = time.time()  # 记录结束时间
 execution_time = end_time - start_time  # 计算执行时间
 print(f"GaussianNoise 函数执行时间: {execution_time:.6f} 秒")
 
-"""比原本遍历提高10.35%的性能
-"""
-
 # show images
 src_img = cv2.imread('lenna.png')
 
