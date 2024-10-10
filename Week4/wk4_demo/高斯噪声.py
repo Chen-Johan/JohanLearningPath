@@ -3,6 +3,8 @@ import numpy as np
 import cv2
 from numpy import shape 
 import random
+import time
+
 def GaussianNoise(src,means,sigma,percetage):
     NoiseImg=src
     NoiseNum=int(percetage*src.shape[0]*src.shape[1])
@@ -21,8 +23,19 @@ def GaussianNoise(src,means,sigma,percetage):
         elif NoiseImg[randX, randY]>255:
             NoiseImg[randX, randY]=255
     return NoiseImg
+
+
 img = cv2.imread('lenna.png',0)
+
+
+# add noise
+start_time = time.time()  # 记录开始时间
 img1 = GaussianNoise(img,2,4,0.8)
+end_time = time.time()  # 记录结束时间
+execution_time = end_time - start_time  # 计算执行时间
+print(f"GaussianNoise 函数执行时间: {execution_time:.6f} 秒")
+
+
 img = cv2.imread('lenna.png')
 img2 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 #cv2.imwrite('lenna_GaussianNoise.png',img1)
