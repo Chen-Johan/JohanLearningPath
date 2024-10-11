@@ -61,7 +61,7 @@ class CPCA(object):
         
     def _Z(self):
         '''按照Z=XU求降维矩阵Z, shape=(m,k), n是样本总数，k是降维矩阵中特征维度总数'''
-        Z = np.dot(self.X, self.U)
+        Z = np.dot(self.centrX, self.U)
         print('X shape:', np.shape(self.X))
         print('U shape:', np.shape(self.U))
         print('Z shape:', np.shape(Z))
