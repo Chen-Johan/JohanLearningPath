@@ -14,11 +14,10 @@ def CannyThreshold(lowThreshold):
             lowThreshold*ratio,
             apertureSize = kernel_size)  #边缘检测
 
-     #将原始图像与检测到的边缘相结合
-     #位运算“与”操作：对每个像素，只有当两个图像的对应位都为1时，结果图像的对应位才为1
-     #src1和src2表示要进行位运算的两幅图像
-     #mask 是可选操作参数，指定操作的掩码，只在掩码对应位置的像素进行位运算
-    dst = cv2.bitwise_and(img,img,mask = detected_edges)  
+    # 将检测到的边缘作为掩码，与原始图像进行位运算“与”操作
+    # 只有在掩码对应位置的像素为1时，结果图像的对应位置才保留原始图像的像素值
+    # img 是原始图像，detected_edges 是边缘检测结果作为掩码
+    dst = cv2.bitwise_and(img, img, mask = detected_edges)  
     cv2.imshow('canny result',dst)  
 
 lowThreshold = 0  
@@ -46,3 +45,4 @@ cv2.createTrackbar('Min threshold','canny result',lowThreshold, max_lowThreshold
 CannyThreshold(0)  # initialization  
 if cv2.waitKey(0) == 27:  #wait for ESC key to exit cv2
     cv2.destroyAllWindows()
+
