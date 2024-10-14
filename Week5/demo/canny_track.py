@@ -1,49 +1,48 @@
 #!/usr/bin/env python
-# encoding=gbk
- 
+# encoding=utf-8
+
 '''
-Canny±ßÔµ¼ì²â£ºÓÅ»¯µÄ³ÌĞò
+Cannyè¾¹ç¼˜æ£€æµ‹ï¼šä¼˜åŒ–çš„ä»£ç 
 '''
 import cv2
 import numpy as np 
- 
+
 def CannyThreshold(lowThreshold):  
-    #detected_edges = cv2.GaussianBlur(gray,(3,3),0) #¸ßË¹ÂË²¨ 
+    #detected_edges = cv2.GaussianBlur(gray,(3,3),0) #é«˜æ–¯æ»¤æ³¢ 
     detected_edges = cv2.Canny(gray,
             lowThreshold,
             lowThreshold*ratio,
-            apertureSize = kernel_size)  #±ßÔµ¼ì²â
- 
-     #ÓÃÔ­Ê¼ÑÕÉ«Ìí¼Óµ½¼ì²âµÄ±ßÔµÉÏ¡£ 
-     #°´Î»¡°Óë¡±²Ù×÷¡£¶ÔÓÚÃ¿¸öÏñËØ,½«Á½·ùÊäÈëÍ¼ÏñÏàÓ¦Î»ÖÃµÄÏñËØÖµ·Ö±ğ½øĞĞ°´Î»¡°Óë¡±ÔËËã,Êä³öµÄ½á¹ûÍ¼ÏñµÄ¶ÔÓ¦ÏñËØÖµ¼´ÎªÕâÁ½·ùÊäÈëÍ¼Ïñ¶ÔÓ¦ÏñËØÖµµÄ°´Î»Óë½á¹û¡£
-     #src1ºÍsrc2±íÊ¾Òª½øĞĞ°´Î»¡°Óë¡±²Ù×÷µÄÁ½·ùÊäÈëÍ¼Ïñ£»
-     #mask ÊÇ¿ÉÑ¡²ÎÊı£¬Èç¹ûÖ¸¶¨ÁËÑÚÄ¤£¬ÔòÖ»¶ÔÑÚÄ¤¶ÔÓ¦Î»ÖÃµÄÏñËØ½øĞĞ°´Î»¡°Óë¡±²Ù×÷¡£º¯ÊıµÄ·µ»ØÖµ±íÊ¾°´Î»¡°Óë¡±ÔËËãµÄ½á¹û¡£
+            apertureSize = kernel_size)  #è¾¹ç¼˜æ£€æµ‹
+
+     #å°†åŸå§‹å›¾åƒä¸æ£€æµ‹åˆ°çš„è¾¹ç¼˜ç›¸ç»“åˆ
+     #ä½è¿ç®—â€œä¸â€æ“ä½œï¼šå¯¹æ¯ä¸ªåƒç´ ï¼Œåªæœ‰å½“ä¸¤ä¸ªå›¾åƒçš„å¯¹åº”ä½éƒ½ä¸º1æ—¶ï¼Œç»“æœå›¾åƒçš„å¯¹åº”ä½æ‰ä¸º1
+     #src1å’Œsrc2è¡¨ç¤ºè¦è¿›è¡Œä½è¿ç®—çš„ä¸¤å¹…å›¾åƒ
+     #mask æ˜¯å¯é€‰æ“ä½œå‚æ•°ï¼ŒæŒ‡å®šæ“ä½œçš„æ©ç ï¼Œåªåœ¨æ©ç å¯¹åº”ä½ç½®çš„åƒç´ è¿›è¡Œä½è¿ç®—
     dst = cv2.bitwise_and(img,img,mask = detected_edges)  
     cv2.imshow('canny result',dst)  
-  
- 
+
 lowThreshold = 0  
 max_lowThreshold = 100  
 ratio = 3  
 kernel_size = 3  
-  
+
 img = cv2.imread('lenna.png')  
-gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)  #×ª»»²ÊÉ«Í¼ÏñÎª»Ò¶ÈÍ¼
-  
+gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)  #è½¬æ¢å½©è‰²å›¾åƒä¸ºç°åº¦å›¾åƒ
+
 cv2.namedWindow('canny result')  
-  
-#ÉèÖÃµ÷½Ú¸Ü,
+
+#åˆ›å»ºæ»‘åŠ¨æ¡
 '''
-ÏÂÃæÊÇµÚ¶ş¸öº¯Êı£¬cv2.createTrackbar()
-¹²ÓĞ5¸ö²ÎÊı£¬ÆäÊµÕâÎå¸ö²ÎÊı¿´±äÁ¿Ãû¾Í´ó¸ÅÄÜÖªµÀÊÇÊ²Ã´ÒâË¼ÁË
-µÚÒ»¸ö²ÎÊı£¬ÊÇÕâ¸ötrackbar¶ÔÏóµÄÃû×Ö
-µÚ¶ş¸ö²ÎÊı£¬ÊÇÕâ¸ötrackbar¶ÔÏóËùÔÚÃæ°åµÄÃû×Ö
-µÚÈı¸ö²ÎÊı£¬ÊÇÕâ¸ötrackbarµÄÄ¬ÈÏÖµ,Ò²ÊÇµ÷½ÚµÄ¶ÔÏó
-µÚËÄ¸ö²ÎÊı£¬ÊÇÕâ¸ötrackbarÉÏµ÷½ÚµÄ·¶Î§(0~count)
-µÚÎå¸ö²ÎÊı£¬ÊÇµ÷½ÚtrackbarÊ±µ÷ÓÃµÄ»Øµ÷º¯ÊıÃû
+ä»¥ä¸‹æ˜¯åˆ›å»ºæ»‘åŠ¨æ¡çš„cv2.createTrackbar()å‡½æ•°
+æœ‰5ä¸ªå‚æ•°ï¼Œåˆ†åˆ«è§£é‡Šå¦‚ä¸‹ï¼š
+ç¬¬ä¸€ä¸ªå‚æ•°æ˜¯æ»‘åŠ¨æ¡çš„åç§°
+ç¬¬äºŒä¸ªå‚æ•°æ˜¯æ»‘åŠ¨æ¡æ‰€å±çª—å£çš„åç§°
+ç¬¬ä¸‰ä¸ªå‚æ•°æ˜¯æ»‘åŠ¨æ¡çš„é»˜è®¤å€¼
+ç¬¬å››ä¸ªå‚æ•°æ˜¯æ»‘åŠ¨æ¡çš„æœ€å¤§å€¼(0~count)
+ç¬¬äº”ä¸ªå‚æ•°æ˜¯æ»‘åŠ¨æ¡å˜åŒ–æ—¶è°ƒç”¨çš„å›è°ƒå‡½æ•°
 '''
 cv2.createTrackbar('Min threshold','canny result',lowThreshold, max_lowThreshold, CannyThreshold)  
-  
+
 CannyThreshold(0)  # initialization  
 if cv2.waitKey(0) == 27:  #wait for ESC key to exit cv2
-    cv2.destroyAllWindows()  
+    cv2.destroyAllWindows()

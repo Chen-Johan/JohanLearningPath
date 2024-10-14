@@ -1,42 +1,42 @@
 #!/usr/bin/env python
-# encoding=gbk
+# encoding=utf-8
 
 import cv2  
 import numpy as np  
 from matplotlib import pyplot as plt  
 
-img = cv2.imread("lenna.png",1)  
+img = cv2.imread("lenna.png", 1)  
 
 img_gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)  
 
 '''
-SobelËã×Ó
-SobelËã×Óº¯ÊıÔ­ĞÍÈçÏÂ£º
+Sobelç®—å­
+Sobelå‡½æ•°çš„åŸå‹å¦‚ä¸‹ï¼š
 dst = cv2.Sobel(src, ddepth, dx, dy[, dst[, ksize[, scale[, delta[, borderType]]]]]) 
-Ç°ËÄ¸öÊÇ±ØĞëµÄ²ÎÊı£º
-µÚÒ»¸ö²ÎÊıÊÇĞèÒª´¦ÀíµÄÍ¼Ïñ£»
-µÚ¶ş¸ö²ÎÊıÊÇÍ¼ÏñµÄÉî¶È£¬-1±íÊ¾²ÉÓÃµÄÊÇÓëÔ­Í¼ÏñÏàÍ¬µÄÉî¶È¡£Ä¿±êÍ¼ÏñµÄÉî¶È±ØĞë´óÓÚµÈÓÚÔ­Í¼ÏñµÄÉî¶È£»
-dxºÍdy±íÊ¾µÄÊÇÇóµ¼µÄ½×Êı£¬0±íÊ¾Õâ¸ö·½ÏòÉÏÃ»ÓĞÇóµ¼£¬Ò»°ãÎª0¡¢1¡¢2¡£
-ÆäºóÊÇ¿ÉÑ¡µÄ²ÎÊı£º
-dstÊÇÄ¿±êÍ¼Ïñ£»
-ksizeÊÇSobelËã×ÓµÄ´óĞ¡£¬±ØĞëÎª1¡¢3¡¢5¡¢7¡£
-scaleÊÇËõ·Åµ¼ÊıµÄ±ÈÀı³£Êı£¬Ä¬ÈÏÇé¿öÏÂÃ»ÓĞÉìËõÏµÊı£»
-deltaÊÇÒ»¸ö¿ÉÑ¡µÄÔöÁ¿£¬½«»á¼Óµ½×îÖÕµÄdstÖĞ£¬Í¬Ñù£¬Ä¬ÈÏÇé¿öÏÂÃ»ÓĞ¶îÍâµÄÖµ¼Óµ½dstÖĞ£»
-borderTypeÊÇÅĞ¶ÏÍ¼Ïñ±ß½çµÄÄ£Ê½¡£Õâ¸ö²ÎÊıÄ¬ÈÏÖµÎªcv2.BORDER_DEFAULT¡£
+å‰å››ä¸ªæ˜¯å¿…é€‰å‚æ•°ï¼š
+ç¬¬ä¸€ä¸ªæ˜¯éœ€è¦å¤„ç†çš„å›¾åƒ
+ç¬¬äºŒä¸ªæ˜¯å›¾åƒçš„æ·±åº¦ï¼Œ-1è¡¨ç¤ºè¾“å‡ºå›¾åƒçš„æ·±åº¦ä¸åŸå›¾åƒä¸€è‡´
+dxå’Œdyè¡¨ç¤ºå¯¼æ•°çš„æ–¹å‘ï¼Œ0è¡¨ç¤ºä¸è®¡ç®—å¯¼æ•°ï¼Œ1è¡¨ç¤ºè®¡ç®—ä¸€é˜¶å¯¼æ•°ï¼Œ2è¡¨ç¤ºè®¡ç®—äºŒé˜¶å¯¼æ•°
+åé¢æ˜¯å¯é€‰å‚æ•°ï¼š
+dstæ˜¯ç›®æ ‡å›¾åƒ
+ksizeæ˜¯Sobelç®—å­çš„å¤§å°ï¼Œå¿…é¡»ä¸º1ã€3ã€5æˆ–7
+scaleæ˜¯ç¼©æ”¾å¯¼æ•°çš„æ¯”ä¾‹å¸¸æ•°ï¼Œé»˜è®¤æƒ…å†µä¸‹æ²¡æœ‰ä¼¸ç¼©ç³»æ•°
+deltaæ˜¯ä¸€ä¸ªå¯é€‰çš„å¢é‡å€¼ï¼Œå°†è¯¥å€¼åŠ åˆ°ç»“æœä¸­ï¼Œé»˜è®¤æƒ…å†µä¸‹æ²¡æœ‰åŠ ä»»ä½•å€¼
+borderTypeæ˜¯åˆ¤æ–­å›¾åƒè¾¹ç•Œçš„æ¨¡å¼ï¼Œé»˜è®¤å€¼ä¸ºcv2.BORDER_DEFAULT
 '''
 
-img_sobel_x = cv2.Sobel(img_gray, cv2.CV_64F, 1, 0, ksize=3)  # ¶ÔxÇóµ¼
-img_sobel_y = cv2.Sobel(img_gray, cv2.CV_64F, 0, 1, ksize=3)  # ¶ÔyÇóµ¼
+img_sobel_x = cv2.Sobel(img_gray, cv2.CV_64F, 1, 0, ksize=3)  # xæ–¹å‘
+img_sobel_y = cv2.Sobel(img_gray, cv2.CV_64F, 0, 1, ksize=3)  # yæ–¹å‘
 
-# Laplace Ëã×Ó  
+# Laplace ç®—å­  
 img_laplace = cv2.Laplacian(img_gray, cv2.CV_64F, ksize=3)  
 
-# Canny Ëã×Ó  
-img_canny = cv2.Canny(img_gray, 100 , 150)  
+# Canny ç®—å­  
+img_canny = cv2.Canny(img_gray, 100, 150)  
 
 plt.subplot(231), plt.imshow(img_gray, "gray"), plt.title("Original")  
 plt.subplot(232), plt.imshow(img_sobel_x, "gray"), plt.title("Sobel_x")  
 plt.subplot(233), plt.imshow(img_sobel_y, "gray"), plt.title("Sobel_y")  
-plt.subplot(234), plt.imshow(img_laplace,  "gray"), plt.title("Laplace")  
+plt.subplot(234), plt.imshow(img_laplace, "gray"), plt.title("Laplace")  
 plt.subplot(235), plt.imshow(img_canny, "gray"), plt.title("Canny")  
-plt.show()  
+plt.show()
