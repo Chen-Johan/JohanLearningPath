@@ -1,6 +1,14 @@
 from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
 from matplotlib import pyplot as plt
 
+'''
+采用最小距离的凝聚层次聚类算法流程：
+
+(1) 将每个对象看作一类，计算两两之间的最小距离；
+(2) 将距离最小的两个类合并成一个新类；
+(3) 重新计算新类与所有类之间的距离；
+(4) 重复(2)、(3)，直到所有类最后合并成一类为止。
+'''
 
 '''
 linkage(y, method='single', metric='euclidean') 包含以下3个参数:
