@@ -25,6 +25,8 @@ def draw_matches(img1, keypoints1, img2, keypoints2, matches):
     combined_image[:height2, width1:width1 + width2] = img2  # 右侧显示图像2
 
     # 获取匹配点的坐标
+    # matches：这是 BFMatcher 的 KNN 匹配结果，
+    # 包含了 queryIdx 和 trainIdx，分别对应图像 1 和图像 2 中匹配点的索引。
     points1 = np.int32([keypoints1[match.queryIdx].pt for match in matches])
     points2 = np.int32([keypoints2[match.trainIdx].pt for match in matches]) + (width1, 0)
 
@@ -52,6 +54,14 @@ bf_matcher = cv2.BFMatcher(cv2.NORM_L2)
 
 # 进行 KNN 匹配，k=2 表示每个特征点找两个最佳匹配
 knn_matches = bf_matcher.knnMatch(descriptors1, descriptors2, k=2)
+
+'''
+每个匹配对象(例如 matches[i][0] 和 matches[i][1])都是 DMatch 类型的对象,DMatch 包含以下几个重要属性:
+
+queryIdx:源图像特征点的索引.
+trainIdx:目标图像特征点的索引.
+distance:描述符之间的距离,用于衡量匹配的相似度,距离越小表示越相似.
+'''
 
 # 筛选出较好的匹配点
 good_matches = []
