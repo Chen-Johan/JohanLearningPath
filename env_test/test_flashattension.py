@@ -1,6 +1,8 @@
-import torch
+import flash_attn
+print("flash-attn imported successfully!")
 
-# 检查 Flash Attention 是否已启用
-print(f"Flash Attention enabled: {torch.backends.cuda.is_built_with_flash_attention()}")
+from flash_attn.flash_attn_interface import flash_attn_qkvpacked_func
+print("Flash Attention QKV Packed Function is available:", flash_attn_qkvpacked_func is not None)
+
 
 
