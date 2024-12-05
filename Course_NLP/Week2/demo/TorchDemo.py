@@ -51,7 +51,7 @@ def build_dataset(total_sample_num):
     for i in range(total_sample_num):
         x, y = build_sample()
         X.append(x)
-        Y.append([y])
+        Y.append([y]) # 1，0是标量，[1]，[0]是向量
     return torch.FloatTensor(X), torch.FloatTensor(Y)
 
 # 测试代码
