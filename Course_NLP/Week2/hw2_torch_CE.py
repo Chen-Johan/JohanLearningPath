@@ -52,7 +52,7 @@ def build_dataset(total_sample_num):
         Y.append(y) # 直接添加整数标签
     return torch.FloatTensor(np.array(X)), torch.LongTensor(Y) 
 # 可以先将 X 转换为 NumPy 数组，再转换为 Tensor：
-# 函数要求输入的目标标签为 LongTensor，其中包含类别的整数索引。
+# nn.functional.cross_entropy函数要求输入的目标标签为 LongTensor，其中包含类别的整数索引。
 # 如果标签是浮点数类型，就会出现类型不匹配的错误。
 
 # 测试代码
