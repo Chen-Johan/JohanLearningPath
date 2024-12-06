@@ -78,10 +78,10 @@ def __init__(self, inputnodes, hiddennodes, outputnodes, learningrate):
 我们知道可以通过矩阵运算把这一系列复杂的运算流程给统一起来。
 '''
 import numpy
- def  query(self, inputs):
-        #根据输入数据计算并输出答案
-        hidden_inputs = numpy.dot(self.wih, inputs)
-        pass
+def  query(self, inputs):
+    #根据输入数据计算并输出答案
+    hidden_inputs = numpy.dot(self.wih, inputs)
+    pass
 
 [6]
 '''
