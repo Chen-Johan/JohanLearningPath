@@ -30,7 +30,7 @@ class TorchModel(nn.Module):
         x = x.transpose(1, 2)                      #(batch_size, sen_len, vector_dim) -> (batch_size, vector_dim, sen_len)
         x = self.pool(x)                           #(batch_size, vector_dim, sen_len)->(batch_size, vector_dim, 1)
         x = x.squeeze()                            #(batch_size, vector_dim, 1) -> (batch_size, vector_dim)
-        x = self.classify(x)                       #(batch_size, vector_dim) -> (batch_size, 1) 3*5 5*1 -> 3*1
+        x = self.classify(x)                       #(batch_size, vector_dim) -> (batch_size, 1) 3*20 20*1 -> 3*1
         y_pred = self.activation(x)                #(batch_size, 1) -> (batch_size, 1)
         if y is not None:
             return self.loss(y_pred, y)   #预测值和真实值计算损失
@@ -55,7 +55,7 @@ def build_vocab():
 def build_sample(vocab, sentence_length):
     #随机从字表选取sentence_length个字，可能重复
     x = [random.choice(list(vocab.keys())) for _ in range(sentence_length)]
-    #指定哪些字出现时为正样本
+    #指定哪些字出现时为正样本，交集，有交集则为正样本
     if set("你我他") & set(x):
         y = 1
     #指定字都未出现，则为负样本

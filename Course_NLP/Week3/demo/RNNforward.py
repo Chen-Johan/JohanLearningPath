@@ -15,7 +15,9 @@ import numpy as np
 class TorchRNN(nn.Module):
     def __init__(self, input_size, hidden_size):
         super(TorchRNN, self).__init__()
-        self.layer = nn.RNN(input_size, hidden_size, bias=False, batch_first=True)
+        self.layer = nn.RNN(input_size, hidden_size, bias=False, batch_first=True) 
+        #batch_first=True表示输入数据的形状为[batch_size, seq_len, input_size]
+        #在NLP任务中建议加上
 
     def forward(self, x):
         return self.layer(x)
