@@ -30,34 +30,36 @@ class DiyModel:
         self.hidden_size = hidden_size
 
     def forward(self, x):
-        ht = np.zeros((self.hidden_size))
+        batch_size, sequence_length, input_size = x.shape
+        ht = np.zeros((batch_size, self.hidden_size))
         output = []
-        for xt in x:
-            ux = np.dot(self.w_ih, xt)
-            wh = np.dot(self.w_hh, ht)
+        for t in range(sequence_length):
+            xt = x[:, t, :]
+            ux = np.dot(xt, self.w_ih.T)
+            wh = np.dot(ht, self.w_hh.T)
             ht_next = np.tanh(ux + wh)
             output.append(ht_next)
             ht = ht_next
-        return np.array(output), ht
+        output = np.stack(output, axis=1)
+        return output, ht
 
 
-x = np.array([[1, 2, 3],
-              [3, 4, 5],
-              [5, 6, 7]])  #网络输入
+x = np.array([[[1, 2, 3],
+               [3, 4, 5],
+               [5, 6, 7]]])  # 网络输入，增加一个维度表示batch_size
 
 #torch实验
 hidden_size = 4
 torch_model = TorchRNN(3, hidden_size)
 
 # print(torch_model.state_dict())
-w_ih = torch_model.state_dict()["layer.weight_ih_l0"]
-w_hh = torch_model.state_dict()["layer.weight_hh_l0"]
+w_ih = torch_model.state_dict()["layer.weight_ih_l0"].numpy()
+w_hh = torch_model.state_dict()["layer.weight_hh_l0"].numpy()
 print(w_ih, w_ih.shape)
 print(w_hh, w_hh.shape)
 #
-torch_x = torch.FloatTensor([x])
+torch_x = torch.FloatTensor(x)
 output, h = torch_model.forward(torch_x)
-print(h)
 print(output.detach().numpy(), "torch模型预测结果")
 print(h.detach().numpy(), "torch模型预测隐含层结果")
 print("---------------")
