@@ -6,7 +6,13 @@ from PIL import Image,ImageDraw
 import numpy as np
 
 # 加载预训练模型
-model = fasterrcnn_resnet50_fpn(pretrained=True)
+# model = fasterrcnn_resnet50_fpn(pretrained=True)
+# 从 torchvision 0.13 起，pretrained 参数已被弃用，需要使用 weights 参数来指定预训练模型，
+# 让模型在最新版本中保持兼容性。这样修改是遵循了新API规范。
+model = torchvision.models.detection.fasterrcnn_resnet50_fpn(
+    weights=torchvision.models.detection.FasterRCNN_ResNet50_FPN_Weights.DEFAULT
+)
+#
 model.eval()
 
 # 如果你的模型是在GPU上训练的，确保模型也在GPU上进行推理
@@ -49,7 +55,7 @@ def show_result(image, prediction):
     image.show()
 
 # 使用示例
-image_path = 'street.jpg'  # 替换为你的图像路径
+image_path = r'C:\Users\Gurkha\Desktop\BaDou\Code\Course_CV\Week13\demo\fasterrcnn简单版\street.jpg'  # 替换为你的图像路径
 prediction = infer(image_path)
 image = Image.open(image_path)
 image = show_result(image, prediction)
