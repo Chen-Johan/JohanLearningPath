@@ -19,7 +19,7 @@ def load_trained_language_model(path):
     window_size = 6       #样本文本长度,与训练时保持一直
     vocab = build_vocab("vocab.txt")      # 加载字表
     model = build_model(vocab, char_dim)  # 加载模型
-    model.load_state_dict(torch.load(path))  #加载训练好的模型权重
+    model.load_state_dict(torch.load(path, weights_only=True))  #加载训练好的模型权重
     model.eval()
     if torch.cuda.is_available():
         model = model.cuda()
