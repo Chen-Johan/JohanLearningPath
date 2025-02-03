@@ -10,16 +10,16 @@ from transformers import BertModel
 
 '''
 
-bert = BertModel.from_pretrained(r"F:\Desktop\work_space\pretrain_models\bert-base-chinese", return_dict=False)
+bert = BertModel.from_pretrained(r"C:\Users\Gurkha\Desktop\BaDou\Code\Course_NLP\Week6\demo\bert-base-chinese", return_dict=False)
 state_dict = bert.state_dict()
 bert.eval()
 x = np.array([2450, 15486, 102, 2110])   #假想成4个字的句子
-torch_x = torch.LongTensor([x])          #pytorch形式输入
+torch_x = torch.tensor(np.array([x]), dtype=torch.long)  # pytorch形式输入
 seqence_output, pooler_output = bert(torch_x)
 print(seqence_output.shape, pooler_output.shape)
 # print(seqence_output, pooler_output)
 
-print(bert.state_dict().keys())  #查看所有的权值矩阵名称
+print(bert.state_dict().keys())  # 查看所有的权值矩阵名称
 
 #softmax归一化
 def softmax(x):

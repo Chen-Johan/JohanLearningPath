@@ -24,7 +24,7 @@ class TorchModel(nn.Module):
         # self.layer = nn.Linear(input_dim, input_dim)
         # self.pool = nn.MaxPool1d(sentence_length)
 
-        self.bert = BertModel.from_pretrained(r"F:\Desktop\work_space\pretrain_models\bert-base-chinese", return_dict=False)
+        self.bert = BertModel.from_pretrained(r"C:\Users\Gurkha\Desktop\BaDou\Code\Course_NLP\Week6\demo\bert-base-chinese", return_dict=False)
 
         self.classify = nn.Linear(input_dim, 3)
         self.activation = torch.sigmoid     #sigmoid做激活函数

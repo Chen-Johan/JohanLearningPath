@@ -11,7 +11,7 @@ from transformers import BertTokenizer
 '''
 
 # bert = BertModel.from_pretrained(r"F:\Desktop\work_space\pretrain_models\bert-base-chinese", return_dict=False)
-tokenizer = BertTokenizer.from_pretrained(r"F:\Desktop\work_space\pretrain_models\bert-base-chinese")
+tokenizer = BertTokenizer.from_pretrained(r"C:\Users\Gurkha\Desktop\BaDou\Code\Course_NLP\Week6\demo\bert-base-chinese")
 
 string = "咱呀么老百姓今儿个真高兴"
 #分字
