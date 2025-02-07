@@ -32,7 +32,7 @@ class Evaluator:
             if torch.cuda.is_available():
                 question_matrixs = question_matrixs.cuda()
             self.knwb_vectors = self.model(question_matrixs)
-            #将所有向量都作归一化 v / |v|
+            #将所有向量都作归一化 v / |v| 为了计算余弦相似度 1-cos(a,b) 加速计算
             self.knwb_vectors = torch.nn.functional.normalize(self.knwb_vectors, dim=-1)
         return
 
