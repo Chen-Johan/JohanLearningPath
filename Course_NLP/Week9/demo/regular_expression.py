@@ -8,17 +8,18 @@ import time
 
 # re.match(pattern, string) 验证字符串起始位置是否与pattern匹配
 # print(re.match('北医[一二三]院', '北医三院怎么走'))         # 在起始位置匹配
-# print(re.match('www', 'www.runoob.com'))         # 不在起始位置匹配
+# print(re.match('www', 'www.runoob.com'))         
 
 
 # # re.search(pattern, string) 验证字符串中是否与有片段与pattern匹配
 # print(re.search('www', 'www.runoob.com'))        # 在起始位置匹配
 # print(re.search('run', 'www.runoob.com'))        # 不在起始位置匹配
+# print(re.search('北京|上海', 'www.run上海oob.com'))        
 
 
 # #pattern中加括号，可以实现多个pattern的抽取
 # line = "Cats are smarter than dogs"
-# matchObj = re.match(r'(.*) are (.*?) .*', line)
+# matchObj = re.match(r'(.*) are (.*?) .*', line)   # .* 表示匹配任意多个字符
 # if matchObj:
 #     print("matchObj.group() : ", matchObj.group())
 #     print("matchObj.group(1) : ", matchObj.group(1))
@@ -35,7 +36,7 @@ import time
 # num = re.sub('#.*$', "", phone)
 # print("电话号码是: ", num)
 # # 删除非数字(-)的字符串  \D 代表非数字  \d 代表数字  脱敏
-# num = re.sub('\d', "*", phone)
+# num = re.sub('\d', "*", phone)        #将数字替换为*，\d表示数字，数据脱敏
 # print("电话号码是 : ", num)
 
 #repl 参数可以是一个函数,要注意传入的参数不是值本身，是match对象
@@ -55,8 +56,8 @@ import time
 #re.findall(string[, pos[, endpos]])
 #在字符串中找到正则表达式所匹配的所有子串，并返回一个列表，如果没有找到匹配的，则返回空列表
 # pattern = re.compile('\d+')  # 查找数字
-# result1 = pattern.findall('runoob 123 google 456')
-# result2 = pattern.findall('run88oob123google456', 0, 10)
+# result1 = pattern.findall('runoob 123 google 456')        #查找所有数字,findall找到所有匹配的
+# result2 = pattern.findall('run88oob123google456', 0, 10)  #找0-10位置的数字
 # print(result1)
 # print(result2)
 
@@ -71,7 +72,7 @@ import time
 
 ###############################
 # 匹配汉字  汉字unicode编码范围[\u4e00-\u9fa5]
-# print(re.findall("[\u4e00-\u9fa5]", "ad噶是的12范德萨发432文"))
+# print(re.findall("[\u4e00-\u9fa5]", "ad噶是的12范德萨发432文"))   #找到所有汉字
 
 ###############################
 # 如果需要匹配，在正则表达式中有特殊含义的符号，需做转义
