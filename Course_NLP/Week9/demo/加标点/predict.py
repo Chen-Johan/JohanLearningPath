@@ -17,7 +17,7 @@ class SentenceLabel:
         self.index_to_sign = dict((y, x) for x, y in self.schema.items())
         self.vocab = self.load_vocab(config["vocab_path"])
         self.model = TorchModel(config)
-        self.model.load_state_dict(torch.load(model_path))
+        self.model.load_state_dict(torch.load(model_path, weights_only=True))
         self.model.eval()
         print("模型加载完毕!")
 
