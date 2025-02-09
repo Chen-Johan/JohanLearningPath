@@ -13,7 +13,7 @@ from transformers import BertModel
 实现一个网络完成一个简单nlp任务
 判断文本中是否有某些特定字符出现
 
-week2的例子，修改引入bert
+这是 week2 的例子，修改为引入 BERT 模型以提高文本分类的准确性
 """
 
 class TorchModel(nn.Module):
