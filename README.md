@@ -86,6 +86,7 @@ Wechat: Gurkha_CN
 
 [Week11 大模型相关内容第一讲](https://www.notion.so/Week11-19a3c964c00980f086a6e0f1f12eb15f?pvs=21)
 
+**内容还在持续更新中......**
 
 ## 代码说明 ##
 
