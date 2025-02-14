@@ -20,7 +20,7 @@ Wechat: Gurkha_CN
 
 内容主要来自于**Badou学院**的课程，如有侵权行为，请联系我纠正。
 
-下面是我的 Notion 笔记，可以对照着
+下面是我的 Notion 笔记，可以对照着学习
 
 [Notion 笔记链接](https://wobbly-fact-044.notion.site/Johan-s-CV-NLP-Notes-10e3c964c00980138368fc9fc1572b01?pvs=73)
 
