@@ -26,7 +26,7 @@ class LanguageModel(nn.Module):
     def forward(self, x, y=None):
         x = self.embedding(x)       #output shape:(batch_size, sen_len, input_dim)
         x, _ = self.layer(x)        #output shape:(batch_size, sen_len, input_dim)
-        y_pred = self.classify(x)   #output shape:(batch_size, vocab_size)
+        y_pred = self.classify(x)   #output shape:(batch_size, sen_len, vocab_size)
         if y is not None:
             return self.loss(y_pred.view(-1, y_pred.shape[-1]), y.view(-1))
         else:
@@ -88,12 +88,15 @@ def generate_sentence(openings, model, vocab, window_size):
         pred_char = ""
         #生成了换行符，或生成文本超过30字则终止迭代
         while pred_char != "\n" and len(openings) <= 30:
-            openings += pred_char
+            openings += pred_char   #将预测的字符加入到文本中
             x = [vocab.get(char, vocab["<UNK>"]) for char in openings[-window_size:]]
             x = torch.LongTensor([x])
             if torch.cuda.is_available():
                 x = x.cuda()
-            y = model(x)[0][-1]
+            y = model(x)[0][-1]     # 取最后一个预测，使用了两次索引操作。这种写法通常用于从多维数组或张量中提取特定元素。
+                                    # 通过 model(x) 获取模型的输出。
+                                    # 通过 [0] 选择第一个批次的数据。
+                                    # 通过 [-1] 选择最后一个时间步的数据。
             index = sampling_strategy(y)
             pred_char = reverse_vocab[index]
     return openings

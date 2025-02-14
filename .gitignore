@@ -1,5 +1,5 @@
-.codemap/ # 忽略所有 .codemap 文件夹
-__pycache__/ # 忽略所有 __pycache__ 文件夹
+.codemap/   # 需要忽略 .codemap 文件夹
+__pycache__/ # 需要忽略 __pycache__ 文件夹
 python practice/02_Pandas/data/game_logs.csv
 Course_CV/Week11/alexnet
 Course_CV/Week11/cifar
