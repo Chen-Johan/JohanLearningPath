@@ -1,0 +1,24 @@
+import json
+
+def load_corpus(path):
+    corpus = []
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            data = json.loads(line)
+            corpus.append(data)
+    return corpus
+
+def data_examination(path):
+    corpus = load_corpus(path)
+    print(corpus[0])
+    print(corpus[1])
+    print("语料数量: ", len(corpus))
+    print("最长content长度: ", max([len(data["content"]) for data in corpus]))
+    print("最长content+title长度: ", max([len(data["content"] + data["title"]) for data in corpus]))
+    print("最长title长度: ", max([len(data["title"]) for data in corpus]))
+    print("content长度均值: ", "{:.2f}".format(sum([len(data["content"]) for data in corpus]) / len(corpus)))
+    print("title长度均值: ", "{:.2f}".format(sum([len(data["title"]) for data in corpus]) / len(corpus)))
+
+
+if __name__ == "__main__":
+    data_examination("sample_data.json")
