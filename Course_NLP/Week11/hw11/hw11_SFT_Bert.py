@@ -9,71 +9,43 @@ import os
 import re
 import json
 from transformers import BertTokenizer, BertModel
+from torch.utils.data import Dataset, DataLoader
 
 """
-基于pytorch的Bert语言模型 实现SFT
+sft的一种实现, 主要通过mask和loss计算来实现, Ber作为backbone
 
 BERT本身并非生成型模型: BERT是一种双向编码器,
 它是为了理解任务而设计的，如句子分类、问答、命名实体识别等。
-它并不像GPT那样本身是生成式的,
-所以直接用BERT来做生成任务(即根据标题生成内容)并不理想。
+
 """
 
 
 class LanguageModel(nn.Module):
-    def __init__(self, hidden_size, vocab_size, pretrain_model_path, tokenizer):
+    def __init__(self, hidden_size, vocab_size, pretrain_model_path):
         super(LanguageModel, self).__init__()
         # 加载预训练的BERT模型，设置eager模式提高训练速度
         self.bert = BertModel.from_pretrained(pretrain_model_path, return_dict=False, attn_implementation='eager')
-        self.tokenizer = tokenizer
+
         # 输出层，将BERT的hidden_size维转换为词表大小
         self.classify = nn.Linear(hidden_size, vocab_size)
-        # 设置ignore_index为[PAD]的token id
-        self.pad_token_id = tokenizer.convert_tokens_to_ids("[PAD]")
+
         # 在计算loss时忽略[PAD]的部分
-        self.loss = nn.CrossEntropyLoss(
-            ignore_index=self.pad_token_id,
+        self.loss = nn.CrossEntropyLoss(ignore_index=-1,
             # label_smoothing=0.1  # 添加label smoothing防止过拟合
         )
 
-    def forward(self, x, y=None):
+    #当输入真实标签，返回loss值；无真实标签，返回预测值
+    def forward(self, x, mask=None, y=None):
         if y is not None:
-            # 训练模式：创建梯形注意力掩码
-            # 梯形掩码的目的是让模型:
-            # 1. content部分可以双向注意（完全可见）
-            # 2. title部分只能看到已生成的token（自回归）
-            batch_size, seq_len = x.shape[0], x.shape[1]
-            
-            # 先创建全1矩阵(batch_size, seq_len, seq_len)
-            # 初始状态下所有位置都可以相互注意
-            mask = torch.ones((batch_size, seq_len, seq_len))
-            
-            # 对batch中的每个样本分别处理
-            for i in range(batch_size):
-                sep_pos = (x[i] == self.tokenizer.convert_tokens_to_ids("[SEP]")).nonzero(as_tuple=True)[0][0]
-                
-                # 修改掩码逻辑 - 现在是从title生成content
-                # 1. title部分自回归，content部分能够看到所有内容
-                mask[i, :sep_pos, :sep_pos] = torch.tril(torch.ones((sep_pos, sep_pos)))  # title部分自回归
-                mask[i, sep_pos:, :sep_pos] = 0  # content部分只能看到title部分
-                mask[i, sep_pos:, sep_pos:] = 1  # content部分可以看到自己的上下文
-
-            
-            # 如果有GPU，将mask移到GPU上
-            if torch.cuda.is_available():
-                mask = mask.cuda()
-                
-            # 将掩码传入BERT，实现注意力控制
+            #训练时，构建一个下三角的mask矩阵，让上下文之间没有交互
+            print(mask.shape)
             x, _ = self.bert(x, attention_mask=mask)
-            # 将BERT的输出映射到词表大小
-            y_pred = self.classify(x)
-            # 计算损失：将预测值和目标值展平后计算交叉熵
+            y_pred = self.classify(x)   #output shape:(batch_size, vocab_size)
             return self.loss(y_pred.view(-1, y_pred.shape[-1]), y.view(-1))
         else:
-            # 推理模式：不需要掩码，因为是一个token一个token地生成
+            #预测时，可以不使用mask
             x, _ = self.bert(x)
-            y_pred = self.classify(x)
-            # 使用softmax得到概率分布
+            y_pred = self.classify(x)   #output shape:(batch_size, vocab_size)
             return torch.softmax(y_pred, dim=-1)
 
 
@@ -86,13 +58,13 @@ class LanguageModel(nn.Module):
 #             vocab[char] = index + 1 #留出0位给pad token
 #     return vocab
 
-#加载语料
+#加载语料, 用title当成假想的prompt，content当成假想的answer
 def load_corpus(path):
     corpus = []
-    with open(path, encoding="utf-8") as f:
+    with open(path, encoding="utf8") as f:
         for line in f:
-            data = json.loads(line)
-            corpus.append(data)
+            line = json.loads(line)
+            corpus.append([line["title"], line["content"]])
     return corpus
 
 '''
@@ -141,49 +113,81 @@ def build_sample(tokenizer, window_size, corpus):
 #     return x, y
 
 
-#建立数据集
-#sample_length 输入需要的样本数量。需要多少生成多少
-#vocab 词表
-#window_size 样本长度
-#corpus 语料字符串
-def build_dataset(sample_length, tokenizer, window_size, corpus):
-    dataset_x = []
-    dataset_y = []
-    for i in range(sample_length):
-        x, y = build_sample(tokenizer, window_size, corpus)
-        dataset_x.append(x)
-        dataset_y.append(y)
-    return torch.LongTensor(dataset_x), torch.LongTensor(dataset_y)
+#sft的数据构造
+#loss只计算答案按部分，通过mask矩阵，让上下文之间没有交互
+#label中使用-1，表示不参与训练
+def build_dataset(tokenizer, corpus, max_length, batch_size):
+    dataset = []
+    for i, (prompt, answer) in enumerate(corpus):
+        prompt_encode = tokenizer.encode(prompt, add_special_tokens=False)
+        answer_encode = tokenizer.encode(answer, add_special_tokens=False)
+        x = [tokenizer.cls_token_id] + prompt_encode + [tokenizer.sep_token_id] + answer_encode + [tokenizer.sep_token_id]
+        y = len(prompt_encode) * [-1] + [-1] + answer_encode + [tokenizer.sep_token_id] + [-1]
+        #构建一个的mask矩阵，让prompt内可以交互，answer中上下文之间没有交互
+        mask = create_mask(len(prompt_encode), len(answer_encode))
+        #padding
+        x = x[:max_length] + [0] * (max_length - len(x))
+        y = y[:max_length] + [0] * (max_length - len(y))
+        x = torch.LongTensor(x)
+        y = torch.LongTensor(y)
+        mask = pad_mask(mask, (max_length, max_length))
+        dataset.append([x, mask, y])
+        
+    return DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=0)
 
-def build_model(vocab_size, char_dim, pretrain_model_path, tokenizer):
-    
-    model = LanguageModel(char_dim, vocab_size, pretrain_model_path, tokenizer)
+#构造掩码，输入两个字符串的长度
+def create_mask(s1, s2):
+    len_s1 = s1 + 2 #cls + sep
+    len_s2 = s2 + 1 #sep
+    # 创建掩码张量
+    mask = torch.ones(len_s1 + len_s2, len_s1 + len_s2)
+    # 遍历s1的每个token
+    for i in range(len_s1):
+        # s1的当前token不能看到s2的任何token
+        mask[i, len_s1:] = 0  
+    # 遍历s2的每个token
+    for i in range(len_s2):
+        # s2的当前token不能看到后面的s2 token
+        mask[len_s1 + i, len_s1 + i + 1:] = 0
+    return mask
+
+def pad_mask(tensor, target_shape):
+    # 获取输入张量和目标形状的长宽
+    height, width = tensor.shape
+    target_height, target_width = target_shape
+    # 创建一个全零张量,形状为目标形状
+    result = torch.zeros(target_shape, dtype=tensor.dtype, device=tensor.device)
+    # 计算需要填充或截断的区域
+    h_start = 0
+    w_start = 0
+    h_end = min(height, target_height)
+    w_end = min(width, target_width)
+    # 将原始张量对应的部分填充到全零张量中
+    result[h_start:h_end, w_start:w_end] = tensor[:h_end - h_start, :w_end - w_start]
+    return result
+
+# 修改 build_model 函数调用
+def build_model(vocab, char_dim, pretrain_model_path):
+    model = LanguageModel(768, 21128, pretrain_model_path)
     return model
 
 
 #文本生成测试代码
-def generate_sentence(title, model, tokenizer, window_size):
+def generate_sentence(openings, model, tokenizer):
     model.eval()
+    openings = tokenizer.encode(openings)
     with torch.no_grad():
-        input_text = title + "[SEP]"
-        generated_content = ""
-        
-        while len(generated_content) <= 150:  # 增加生成内容的长度限制
-            current_input = input_text + generated_content
-            x = tokenizer.encode(current_input, add_special_tokens=False)
-            x = torch.LongTensor([x])
+        #生成文本超过30字则终止迭代
+        while len(openings) <= 50:
+            x = torch.LongTensor([openings])
             if torch.cuda.is_available():
                 x = x.cuda()
-            
-            y = model(x)[0][-1]  # 只取最后一个时间步的预测
+            y = model(x)[0][-1]
             index = sampling_strategy(y)
-            pred_char = ''.join(tokenizer.decode(index))
-            
-            if pred_char == "[EOS]":  # 使用[EOS]作为生成终止符
-                break
-            generated_content += pred_char
-            
-    return generated_content
+            openings.append(index)
+    return tokenizer.decode(openings)
+
+
 # def generate_sentence(openings, model, tokenizer, window_size):
 #     # reverse_vocab = dict((y, x) for x, y in vocab.items())
 #     model.eval()
@@ -201,39 +205,33 @@ def generate_sentence(title, model, tokenizer, window_size):
 #             pred_char = ''.join(tokenizer.decode(index))
 #     return openings
 
-# def sampling_strategy(prob_distribution):
-#     # 随机选择采样策略:90%概率使用贪婪搜索,10%概率使用随机采样
-#     if random.random() > 0.1:
-#         strategy = "greedy"
-#     else:
-#         strategy = "sampling"
-        
-#     if strategy == "greedy":
-#         # 贪婪搜索:选择概率最大的token
-#         return int(torch.argmax(prob_distribution))
-#     elif strategy == "sampling":
-#         # 随机采样:根据概率分布随机选择一个token
-#         prob_distribution = prob_distribution.cpu().numpy()
-#         return np.random.choice(list(range(len(prob_distribution))), p=prob_distribution)
+def sampling_strategy(prob_distribution):
+    if random.random() > 0.1:
+        strategy = "greedy"
+    else:
+        strategy = "sampling"
+    if strategy == "greedy":
+        return int(torch.argmax(prob_distribution))
+    elif strategy == "sampling":
+        prob_distribution = prob_distribution.cpu().numpy()
+        return np.random.choice(list(range(len(prob_distribution))), p=prob_distribution)
     
-def sampling_strategy(prob_distribution, temperature=0.7):
-    # 应用温度缩放
-    prob_distribution = prob_distribution / temperature
+# def sampling_strategy(prob_distribution, temperature=0.7):
+#     # 应用温度缩放
+#     prob_distribution = prob_distribution / temperature
     
-    if random.random() > 0.1:  # 90%使用top-k采样
-        # 只保留前k个最高概率
-        k = 5
-        values, indices = torch.topk(prob_distribution, k)
-        prob_distribution = torch.zeros_like(prob_distribution).scatter_(-1, indices, values)
+#     if random.random() > 0.1:  # 90%使用top-k采样
+#         # 只保留前k个最高概率
+#         k = 5
+#         values, indices = torch.topk(prob_distribution, k)
+#         prob_distribution = torch.zeros_like(prob_distribution).scatter_(-1, indices, values)
     
-    # 使用softmax确保概率和为1
-    prob_distribution = torch.softmax(prob_distribution, dim=-1)
+#     # 使用softmax确保概率和为1
+#     prob_distribution = torch.softmax(prob_distribution, dim=-1)
     
-    # 转换为numpy数组并确保概率和为1
-    prob_distribution = prob_distribution.cpu().numpy()
-    prob_distribution = prob_distribution / prob_distribution.sum()  # 再次归一化确保和为1
-    
-    return np.random.choice(list(range(len(prob_distribution))), p=prob_distribution)
+#     # 转换为numpy数组进行采样
+#     prob_distribution = prob_distribution.cpu().numpy()
+#     return np.random.choice(len(prob_distribution), p=prob_distribution)
 
 # def sampling_strategy(prob_distribution, temperature=0.7):
 #     # 应用温度控制生成的多样性
@@ -264,25 +262,20 @@ def sampling_strategy(prob_distribution, temperature=0.7):
 
 def train(corpus_path, save_weight=True):
     epoch_num = 100
-    batch_size = 64
-    train_sample = 10000
+    batch_size = 128
     char_dim = 768
+    max_length = 50
     vocab_size = 21128
-    learning_rate = 3e-5
+    learning_rate = 3e-4
     
     pretrain_model_path = r'C:\Users\Gurkha\Desktop\BaDou\Code\Course_NLP\Week6\demo\bert-base-chinese'
     tokenizer = BertTokenizer.from_pretrained(pretrain_model_path)
 
     corpus = load_corpus(corpus_path)
-    
-    # 计算最大长度：title + [SEP] + content + [SEP]
-    window_size = max([len(data['title']) + 1 + len(data['content']) for data in corpus])
+    train_data = build_dataset(tokenizer, corpus, max_length, batch_size)  #建立数据集
     
     
-    # 从tokenizer中获取实际的词表大小
-    vocab_size = tokenizer.vocab_size
-    
-    model = build_model(vocab_size, char_dim, pretrain_model_path, tokenizer)
+    model = build_model(vocab_size, char_dim, pretrain_model_path)
     if torch.cuda.is_available():
         model = model.cuda()
     
@@ -296,18 +289,17 @@ def train(corpus_path, save_weight=True):
     for epoch in range(epoch_num):
         model.train()
         watch_loss = []
-        for batch in range(int(train_sample / batch_size)):
-            x, y = build_dataset(batch_size, tokenizer, window_size, corpus)
+        for x, mask, y in train_data: #构建一组训练样本
             if torch.cuda.is_available():
-                x, y = x.cuda(), y.cuda()
-            optim.zero_grad()
-            loss = model(x, y)
-            loss.backward()
-            optim.step()
+                x, mask, y = x.cuda(), mask.cuda(), y.cuda()
+            optim.zero_grad()    #梯度归零
+            loss = model(x, mask, y)   #计算loss
+            loss.backward()      #计算梯度
+            optim.step()         #更新权重
             watch_loss.append(loss.item())
         
         avg_loss = np.mean(watch_loss)
-        print(f"=========\n第{epoch + 1}轮平均loss:{avg_loss:.5f}")
+        print("=========\n第%d轮平均loss:%f" % (epoch + 1, np.mean(watch_loss)))
         
         # 增加验证集评估
         if avg_loss < best_loss:
@@ -324,15 +316,13 @@ def train(corpus_path, save_weight=True):
                 print("Early stopping!")
                 break
         
-        # 每轮结束后测试生成效果
+        # 修改这部分代码
         model.eval()
         test_samples = random.sample(corpus, 2)  # 随机抽取2个样本测试
-        for sample in test_samples:
-            title = sample['title']
-            real_content = sample['content']
-            generated_content = generate_sentence(title, model, tokenizer, window_size)
+        for title, content in test_samples:  # 直接解包列表
             print("\n标题:", title)
-            print("真实内容:", real_content[:50] + "...")
+            print("真实内容:", content)
+            generated_content = generate_sentence(title, model, tokenizer)
             print("生成内容:", generated_content)
             print("-" * 50)
     
@@ -345,5 +335,4 @@ def train(corpus_path, save_weight=True):
 
 
 if __name__ == "__main__":
-    # build_vocab_from_corpus("corpus/all.txt")
-    train("sample_data.json", True)
+    train("sample_data.json", False)
