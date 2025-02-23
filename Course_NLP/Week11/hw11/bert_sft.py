@@ -25,7 +25,7 @@ class LanguageModel(nn.Module):
         self.bert = BertModel.from_pretrained(pretrain_model_path, return_dict=False, attn_implementation='eager')
 
         self.classify = nn.Linear(hidden_size, vocab_size)
-        self.loss = nn.CrossEntropyLoss(ignore_index=-1)
+        self.loss = nn.CrossEntropyLoss(ignore_index=-1) #label中使用-1，表示不参与训练
 
     #当输入真实标签，返回loss值；无真实标签，返回预测值
     def forward(self, x, mask=None, y=None):
