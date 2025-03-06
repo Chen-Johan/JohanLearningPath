@@ -38,7 +38,7 @@ model = get_peft_model(model, peft_config)
 # print(model.state_dict().keys())
 # print("====================")
 
-state_dict = model.state_dict()
+state_dict = model.state_dict() # state_dict是一个字典，包含了模型的所有参数
 
 #将微调部分权重加载
 if tuning_tactics == "lora_tuning":
