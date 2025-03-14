@@ -75,7 +75,7 @@ def encode(text, merges):
 
 
 if __name__ == "__main__":
-    dir_path = r"F:\Desktop\work_space\badou\八斗课程\week14 大语言模型相关第四讲\RAG\dota2英雄介绍-byRAG\Heroes"
+    dir_path = r"C:\Users\Gurkha\Desktop\BaDou\Code\Course_NLP\Week14\demo\RAG\dota2英雄介绍-byRAG\Heroes"
     #所有文件读成一个长字符串。也可以试试只读入一个文件
     corpus = ""
     for path in os.listdir(dir_path):
