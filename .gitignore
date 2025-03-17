@@ -14,6 +14,9 @@ Course_CV/Week16/demo/Unet-Pytorch-master
 Course_CV/Week16/demo/yolov5/yolov5s.pt
 Course_NLP/Week7/demo/bayes & svm/model.w2v
 Course_NLP/Week13/demo/trl
+Course_NLP/Week6/demo/bert-base_multi_cased_L-12_H-768_A-12
+Course_NLP/Week6/demo/bert-large_wwm_cased_L-24_H-1024_A-16
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -190,3 +193,4 @@ cython_debug/
 # models
 *.pth
 *.pt
+
