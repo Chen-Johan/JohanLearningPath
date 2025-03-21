@@ -2,7 +2,8 @@ import re
 import json
 import pandas
 import itertools
-from py2neo import Graph
+# from py2neo import Graph
+from neo4j import GraphDatabase # RoutingControl
 from collections import defaultdict
 
 
@@ -12,7 +13,8 @@ from collections import defaultdict
 
 class GraphQA:
     def __init__(self):
-        self.graph = Graph("http://localhost:7474", auth=("neo4j", "demo"))
+        uri = "bolt://localhost:7687"  # Neo4j默认使用bolt协议，端口通常是7687
+        self.driver = GraphDatabase.driver(uri, auth=("neo4j", "demo"))
         schema_path = "kg_schema.json"
         templet_path = "question_templet.xlsx"
         self.load(schema_path, templet_path)
@@ -164,6 +166,7 @@ class GraphQA:
 
 
     #对外提供问答接口
+    # 替换原来的查询执行方式，修改query方法中的相关代码
     def query(self, sentence):
         print("============")
         print(sentence)
@@ -171,12 +174,20 @@ class GraphQA:
         print("info:", info)
         templet_cypher_score = self.cypher_match(sentence, info)  #cypher匹配
         for templet, cypher, score, answer in templet_cypher_score:
-            graph_search_result = self.graph.run(cypher).data()
-            # 最高分命中的模板不一定在图上能找到答案, 当不能找到答案时，运行下一个搜索语句, 找到答案时停止查找后面的模板
-            if graph_search_result:
-                answer = self.parse_result(graph_search_result, answer, info)
-                return answer        
+            # 使用session执行查询
+            with self.driver.session() as session:
+                graph_search_result = session.run(cypher).data()
+                # 最高分命中的模板不一定在图上能找到答案, 当不能找到答案时，运行下一个搜索语句, 找到答案时停止查找后面的模板
+                if graph_search_result:
+                    answer = self.parse_result(graph_search_result, answer, info)
+                    return answer        
         return None
+    
+    
+    #关闭连接
+    def __del__(self):
+        if hasattr(self, 'driver'):
+            self.driver.close()
 
 
 if __name__ == "__main__":
@@ -195,5 +206,9 @@ if __name__ == "__main__":
     print(res)
     res = graph.query("周杰伦和淡江中学是什么关系")
     print(res)
+    
+    # 关闭连接
+    del graph
+
 
 
