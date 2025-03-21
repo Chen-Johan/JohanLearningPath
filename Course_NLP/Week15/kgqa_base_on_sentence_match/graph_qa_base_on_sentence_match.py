@@ -3,7 +3,7 @@ import json
 import pandas
 import itertools
 # from py2neo import Graph
-from neo4j import GraphDatabase # RoutingControl
+from neo4j import GraphDatabase
 from collections import defaultdict
 
 
@@ -14,7 +14,9 @@ from collections import defaultdict
 class GraphQA:
     def __init__(self):
         uri = "bolt://localhost:7687"  # Neo4j默认使用bolt协议，端口通常是7687
-        self.driver = GraphDatabase.driver(uri, auth=("neo4j", "demo"))
+        # 指定要使用的数据库名称
+        self.database_name = "neo4j"  
+        self.driver = GraphDatabase.driver(uri, auth=("neo4j", "12345678"))
         schema_path = "kg_schema.json"
         templet_path = "question_templet.xlsx"
         self.load(schema_path, templet_path)
@@ -89,7 +91,7 @@ class GraphQA:
         return res
 
     #对于找到了超过模板中需求的实体数量的情况，需要进行排列组合
-    #info:{"%ENT%":["周杰伦", "方文山"], “%REL%”:[“作曲”]}
+    #info:{"%ENT%":["周杰伦", "方文山"], "%REL%":["作曲"]}
     def get_combinations(self, cypher_check, info):
         slot_values = []
         for key, required_count in cypher_check.items():
@@ -109,7 +111,7 @@ class GraphQA:
         return string
 
     #对于单条模板，根据抽取到的实体属性信息扩展，形成一个列表
-    #info:{"%ENT%":["周杰伦", "方文山"], “%REL%”:[“作曲”]}
+    #info:{"%ENT%":["周杰伦", "方文山"], "%REL%":["作曲"]}
     def expand_templet(self, templet, cypher, cypher_check, info, answer):
         combinations = self.get_combinations(cypher_check, info)
         templet_cpyher_pair = []
@@ -160,29 +162,83 @@ class GraphQA:
         graph_search_result = graph_search_result[0]
         #关系查找返回的结果形式较为特殊，单独处理
         if "REL" in graph_search_result:
-            graph_search_result["REL"] = list(graph_search_result["REL"].types())[0]
+            # neo4j驱动返回的关系对象结构与py2neo不同
+            rel_value = graph_search_result["REL"]
+            
+            # 检查是否为字典类型
+            if isinstance(rel_value, dict) and "type" in rel_value:
+                graph_search_result["REL"] = rel_value["type"]
+            
+            # 检查是否有type属性的对象
+            elif hasattr(rel_value, "type"):
+                graph_search_result["REL"] = rel_value.type
+            
+            # 检查是否为元组或列表
+            elif isinstance(rel_value, (tuple, list)):
+                graph_search_result["REL"] = str(rel_value[0]) if rel_value else ""
+                
+            # 如果是其他类型，尝试转换为字符串
+            else:
+                try:
+                    graph_search_result["REL"] = str(rel_value)
+                except:
+                    graph_search_result["REL"] = "未知关系"
+        
+        # 确保所有值都是字符串
+        for key in graph_search_result:
+            if not isinstance(graph_search_result[key], str):
+                graph_search_result[key] = str(graph_search_result[key])
+                
         answer = self.replace_token_in_string(answer, graph_search_result)
         return answer
 
 
     #对外提供问答接口
-    # 替换原来的查询执行方式，修改query方法中的相关代码
     def query(self, sentence):
         print("============")
         print(sentence)
         info = self.parse_sentence(sentence)    #信息抽取
         print("info:", info)
+        
+        # 特殊处理两个实体之间的关系查询
+        if len(info["%ENT%"]) == 2 and "关系" in sentence:
+            return self.get_relation_between_entities(info["%ENT%"][0], info["%ENT%"][1])
+        
         templet_cypher_score = self.cypher_match(sentence, info)  #cypher匹配
         for templet, cypher, score, answer in templet_cypher_score:
-            # 使用session执行查询
-            with self.driver.session() as session:
-                graph_search_result = session.run(cypher).data()
-                # 最高分命中的模板不一定在图上能找到答案, 当不能找到答案时，运行下一个搜索语句, 找到答案时停止查找后面的模板
-                if graph_search_result:
-                    answer = self.parse_result(graph_search_result, answer, info)
-                    return answer        
+            # 使用session执行查询，指定特定数据库
+            with self.driver.session(database=self.database_name) as session:
+                try:
+                    graph_search_result = session.run(cypher).data()
+                    # 最高分命中的模板不一定在图上能找到答案, 当不能找到答案时，运行下一个搜索语句, 找到答案时停止查找后面的模板
+                    if graph_search_result:
+                        answer = self.parse_result(graph_search_result, answer, info)
+                        return answer
+                except Exception as e:
+                    print(f"查询执行错误: {e}")
+                    continue
         return None
     
+    # 专门用于查询两个实体之间关系的方法
+    def get_relation_between_entities(self, entity1, entity2):
+        cypher = f"""
+        MATCH (a {{NAME: '{entity1}'}})-[r]->(b {{NAME: '{entity2}'}})
+        RETURN type(r) as relation
+        UNION
+        MATCH (a {{NAME: '{entity2}'}})-[r]->(b {{NAME: '{entity1}'}})
+        RETURN type(r) + '(反向)' as relation
+        """
+        
+        with self.driver.session(database=self.database_name) as session:
+            try:
+                result = session.run(cypher).data()
+                if result:
+                    return f"{entity1}和{entity2}的关系是{result[0]['relation']}"
+                else:
+                    return f"没有找到{entity1}和{entity2}之间的关系"
+            except Exception as e:
+                print(f"关系查询错误: {e}")
+                return f"查询{entity1}和{entity2}之间的关系时出错"
     
     #关闭连接
     def __del__(self):
@@ -209,6 +265,3 @@ if __name__ == "__main__":
     
     # 关闭连接
     del graph
-
-
-
