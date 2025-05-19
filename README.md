@@ -24,7 +24,7 @@ Wechat: Gurkha_CN
 
 [Notion 笔记链接](https://wobbly-fact-044.notion.site/Johan-s-CV-NLP-Notes-10e3c964c00980138368fc9fc1572b01?pvs=73)
 
-### CV课程 ###
+**CV课程**
 
 [Week1 CV](https://www.notion.so/Week1-CV-10f3c964c00980f08ed6c26c99652dd0?pvs=21)
 
@@ -48,21 +48,19 @@ Wechat: Gurkha_CN
 
 [Week11 卷积神经网络&图像识别](https://www.notion.so/Week11-14f3c964c00980158899e34546415b61?pvs=21)
 
-[Week12 Resnet/Fine tuning& Inception/ Mobilenet/CNN](https://www.notion.so/Week12-Resnet-Fine-tuning-Inception-Mobilenet-CNN-15d3c964c00980a080f0db054e1f0d51?pvs=21)
+[Week12 [Resnet/Fine tuning& Inception/ Mobilenet/CNN]](https://www.notion.so/Week12-Resnet-Fine-tuning-Inception-Mobilenet-CNN-15d3c964c00980a080f0db054e1f0d51?pvs=21)
 
-[Week13  目标检测 Fast-RCNN & Yolo V1-V3](https://www.notion.so/Week13-Fast-RCNN-Yolo-V1-V3-1643c964c00980cabf79f4d480931f8f?pvs=21)
+[Week13 [目标检测/IOU & Fast-RCNN(anchors/Proposal) & Yolo V1-V3]](https://www.notion.so/Week13-IOU-Fast-RCNN-anchors-Proposal-Yolo-V1-V3-1643c964c00980cabf79f4d480931f8f?pvs=21)
 
-[Week14 ViT&人脸检测&mtcnn](https://www.notion.so/Week14-ViT-mtcnn-16c3c964c009807a8deafc15c7e0dfe8?pvs=21)
+[Week14 ViT & 人脸检测 [attention/Detr/图像金字塔/mtcnn(P/R/O-net)]](https://www.notion.so/Week14-ViT-attention-Detr-mtcnn-P-R-O-net-16c3c964c009807a8deafc15c7e0dfe8?pvs=21)
 
-[Week15 图像分割 FCN/Mask R-CNN/Yolov4&Yolov5/Unet&Unet++](https://www.notion.so/Week15-FCN-Mask-R-CNN-Yolov4-Yolov5-Unet-Unet-17c3c964c00980cfae7fd7dc9408f490?pvs=21)
+[Week15 图像分割 [FCN/Mask R-CNN/Yolov4&Yolov5/Unet&Unet++]](https://www.notion.so/Week15-FCN-Mask-R-CNN-Yolov4-Yolov5-Unet-Unet-17c3c964c00980cfae7fd7dc9408f490?pvs=21)
 
-[Week16 目标跟踪&姿态检测](https://www.notion.so/Week16-17d3c964c0098094a4c8d8cbedca36cd?pvs=21)
+[Week16 目标跟踪&姿态检测[DeepSort/匈牙利算法/卡尔曼滤波/OpenPose]](https://www.notion.so/Week16-DeepSort-OpenPose-17d3c964c0098094a4c8d8cbedca36cd?pvs=21)
 
-[Week17 AIGC](https://www.notion.so/Week17-AIGC-1863c964c0098055a975c6ae059d2cd1?pvs=21)
+[Week17 [AIGC & VAE/GAN/SD]](https://www.notion.so/Week17-AIGC-VAE-GAN-SD-1863c964c0098055a975c6ae059d2cd1?pvs=21)
 
-[CV就业指导](https://www.notion.so/CV-1863c964c0098054b117e38cfacd749c?pvs=21)
-
-### NLP课程 ###
+**NLP课程**
 
 [Week1 NLP介绍 & 机器学习简介](https://www.notion.so/Week1-NLP-1513c964c00980a080a0c4eb0d46893f?pvs=21)
 
@@ -84,7 +82,47 @@ Wechat: Gurkha_CN
 
 [Week10 文本生成 [En-Decoder/Attentions/Teacher Forcing/采样策略/评指/T5]](https://www.notion.so/Week10-En-Decoder-Attentions-Teacher-Forcing-T5-1923c964c0098089b2aee353d4544678?pvs=21)
 
-[Week11 大模型相关内容第一讲](https://www.notion.so/Week11-19a3c964c00980f086a6e0f1f12eb15f?pvs=21)
+[Week11 大模型I [预训练模型的发展/Distill/ICL/提示工程]](https://www.notion.so/Week11-I-Distill-ICL-19a3c964c00980f086a6e0f1f12eb15f?pvs=21)
+
+[Week12 大模型II [LLM结构变化/位置编码/长度外推/多模态介绍]](https://www.notion.so/Week12-II-LLM-1a23c964c00980ceb4c5fc2a9721db8b?pvs=21)
+
+[Week13 大模型III [强化学习/大模型训练/投机采样]](https://www.notion.so/Week13-III-1a93c964c00980debde2c237ed1e1114?pvs=21)
+
+[Week14 大模型IV [BPE算法/RAG方法/Agent/垂直领域问答]](https://www.notion.so/Week14-IV-BPE-RAG-Agent-1aa3c964c0098037a391d0d0c321f511?pvs=21)
+
+[Week15 知识图谱[垂直领域问答/知识图谱/数据库]](https://www.notion.so/Week15-1b83c964c00980a3ae7fd91ce285eaa2?pvs=21)
+
+[Week16 对话系统](https://www.notion.so/Week16-1be3c964c0098021bc98f3f504bb5d2e?pvs=21)
+
+[Week17 推荐系统](https://www.notion.so/Week17-1ce3c964c0098011b441d22a5dcd48ae?pvs=21)
+
+**YOLO改进剪枝蒸馏**
+
+[改进](https://www.notion.so/1a33c964c00980aca79ae3e099aa4dc8?pvs=21)
+
+[蒸馏](https://www.notion.so/1a33c964c009805887aef6c254a92e26?pvs=21)
+
+[剪枝](https://www.notion.so/1a33c964c00980969784d5e708892da8?pvs=21)
+
+[YOLO训练时的注意事项](https://www.notion.so/YOLO-1a43c964c00980ca94fbd2fb6d3bd9a8?pvs=21)
+
+[YOLO通用问题](https://www.notion.so/YOLO-1a53c964c0098059ba25f4b8b0e3e387?pvs=21)
+
+[YOLO系列对比](https://www.notion.so/YOLO-1a63c964c009809e933aec61d3ac6a0b?pvs=21)
+
+[一个deepsort-yolo任务](https://www.notion.so/deepsort-yolo-1d53c964c00980359a44fc2b7edc1a6a?pvs=21)
+
+**分布式计算**
+
+[Deepspeed & 分布式训练路线图](https://www.notion.so/Deepspeed-1d23c964c009807285e8ed5e95f980c4?pvs=21)
+
+GuPao补充【按模块分类】
+
+[第⼀模块-AI 必备基础与机器学习](https://www.notion.so/AI-15b3c964c0098073b5b3c7aff5f97d2b?pvs=21)
+
+第⼆模块-计算机视觉算法及其项⽬实战
+
+[第⼀章·深度学习必备核心算法](https://www.notion.so/1323c964c00980759cd7febcc5d7bded?pvs=21)
 
 **内容还在持续更新中......**
 
