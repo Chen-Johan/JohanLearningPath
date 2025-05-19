@@ -116,13 +116,6 @@ Wechat: Gurkha_CN
 
 [Deepspeed & 分布式训练路线图](https://www.notion.so/Deepspeed-1d23c964c009807285e8ed5e95f980c4?pvs=21)
 
-GuPao补充【按模块分类】
-
-[第⼀模块-AI 必备基础与机器学习](https://www.notion.so/AI-15b3c964c0098073b5b3c7aff5f97d2b?pvs=21)
-
-第⼆模块-计算机视觉算法及其项⽬实战
-
-[第⼀章·深度学习必备核心算法](https://www.notion.so/1323c964c00980759cd7febcc5d7bded?pvs=21)
 
 **内容还在持续更新中......**
 
